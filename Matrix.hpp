@@ -15,22 +15,27 @@ class Matrix
 {
     private:
         
-        int row, col;
-        std::vector<double> my_mat;
+        size_t row, col;
+        double sum;
+        std::vector<std::vector<double>> my_mat;
 
     public:
 
         /* constructor */
         Matrix() = default;
+        Matrix(int row, int col);
         Matrix (const std::vector<double>& mat, int row, int col);
         ~Matrix();
 
         // getters
-        int get_row() const{ return this->row; }
-        int get_col() const{ return this->col; }
-        std::vector<double> get_mat(); 
-        double get_sum(); // sum all fields
+        size_t get_row() const{ return this->row; }
+        size_t get_col() const{ return this->col; }
+        std::vector<std::vector<double>> get_mat() const { return this->my_mat; }
+        double get_sum() const { return this->sum; } // sum all fields
         
+        // setter
+        void set_sum(double val){ this->sum = val; } // change the total sum
+
         /* arithmetic operators */
         friend Matrix operator-(const Matrix& mat);
         friend Matrix operator-(const Matrix& mat1, const Matrix& mat2);

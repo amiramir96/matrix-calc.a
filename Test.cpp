@@ -26,7 +26,7 @@ TEST_CASE("Bad inputs")
         }
         SUBCASE("wrong (row / col)")
         {
-            CHECK_THROWS(Matrix(arr1, 3, 3));
+            CHECK_NOTHROW(Matrix(arr1, 3, 3));
             CHECK_THROWS(Matrix(arr1, 3, 4));
             CHECK_THROWS(Matrix(arr1, 4, 3));
         }
@@ -70,8 +70,8 @@ TEST_CASE("Bad inputs")
             CHECK_THROWS(m_1x6 *= m_2x3);
             CHECK_THROWS(m_1x6 * m_2x3);
 
-            CHECK_NOTHROW(m_2x3 *= m_3x2);
-            CHECK_NOTHROW(m_2x3 * m_3x2);
+            SUBCASE("wont edit matrixes when using mul"){CHECK_NOTHROW(m_2x3 *= m_3x2);}
+            CHECK_NOTHROW(m_ident3x3 * m_3x2);
         }
     }
 
@@ -106,8 +106,8 @@ TEST_CASE("Good inputs")
         [49 64]
 
     */
-    std::vector<double> arr1_zero = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    std::vector<double> arr3_zero = {0, 0, 0, 0, 0, 0, 0};
+    std::vector<double> arr1_zero = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    std::vector<double> arr3_zero = {0, 0, 0, 0, 0, 0};
     std::vector<double> arr_zero2x2 = {0, 0, 0, 0};
 
     Matrix m_ident3x3(identity, 3, 3);
@@ -171,13 +171,13 @@ TEST_CASE("Good inputs")
             CHECK_EQ(m_zero3x3, m_3x3 - m_3x3);
             CHECK_NE(m_zero3x3, m_3x3 + m_3x3);
             
-            CHECK_EQ(m_zero2x2, m_2x2 + m_2x2negative);
-            CHECK_NE(m_zero2x2, m_2x2 - m_2x2negative);
+            CHECK_EQ(true, m_zero2x2 == (m_2x2 + m_2x2negative));
+            CHECK_EQ(false, m_zero2x2 == (m_2x2 - m_2x2negative));
             
             SUBCASE("use += -=")
             {
                 m_ident3x3 -= m_ident3x3;
-                CHECK_EQ(m_zero3x3, m_ident3x3);
+                CHECK_EQ(true, m_zero3x3 == m_ident3x3);
 
                 m_3x3 += m_3x3;
                 CHECK_NE(m_zero3x3, m_3x3);
@@ -203,8 +203,8 @@ TEST_CASE("Good inputs")
             }
             SUBCASE("mul with ident")
             {
-                CHECK_EQ(m_3x3, m_3x3*m_ident3x3);
-                CHECK_EQ(m_2x3, m_2x3*m_ident3x3);
+                CHECK_EQ(true, m_3x3 == (m_3x3*m_ident3x3));
+                CHECK_EQ(true, m_2x3 == (m_2x3*m_ident3x3));
             
                 m_3x3 *= m_ident3x3;
                 CHECK_EQ(m_3x3, m_3x3);
