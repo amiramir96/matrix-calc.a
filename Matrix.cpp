@@ -263,7 +263,101 @@ namespace zich
     { return !(mat1 < mat2); }
 
     // Global Operators
-    istream &operator>>(istream &in, const Matrix &mat) { return in; }
-    ostream &operator<<(ostream &out, const Matrix &mat){ return out; }
+    istream &operator>>(istream &in, Matrix &mat) 
+    { /* takes cin and construct it to Matrix to &mat 
+        the responsibility is completly on the USER!
+            if row*col != amount of elements in string the func will throw 'invalid_argument' exception! 
+      */
 
+        // set string at input_mat var
+        std::string input_mat;
+        std::getline(in, input_mat);
+        
+        // credit to 841 comment, helped alot! https://stackoverflow.com/questions/14265581/parse-split-a-string-in-c-using-string-delimiter-standard-c
+        // its a way to split string properly
+        // block of spliting the whole string to rows! via ',' deli
+        std::string delimeter = ",";
+        size_t pos = 0;
+        std::vector<std::string> tokens; // 
+        while((pos = input_mat.find(delimeter)) != std::string::npos)
+        {
+            tokens.push_back(input_mat.substr(0, pos));
+            input_mat.erase(0, pos + 1);
+        }
+        // ------ end of block ------
+
+        int row = tokens.size(); // splited to rows, size of string vector is amount of rows
+
+        // this block split again, this time each row to double elements via ' ' deli
+        std::vector<double> mat_vector;
+        for (size_t i=0; i < row; i++)
+        {
+            pos = 0;
+            while ((pos += tokens[i].find(" ")) != std::string::npos) 
+            {
+                mat_vector.push_back(std::stod(tokens[i].substr(0, pos)));
+                tokens[i].erase(0, pos + 1);
+            }
+        }
+        // ----- end of block -----
+
+        int col = ((int)(mat_vector.size())) / row; // amount_of_cols = all_elements / amount_of_rows 
+        mat = Matrix(mat_vector, row, col);
+        return in; 
+    }
+
+    ostream &operator<<(ostream &out, const Matrix &mat)
+    { /* this craft creates string of a matrix for example: (identity matrix 3x3)
+         [1 0 0]
+         [0 1 0]
+         [0 0 1]
+        */
+
+        std::string mat_str;
+        std::string temp;
+
+        // this loops shall create a string formated to matrix 
+        for (size_t i=0; i < mat.get_row(); i++)
+        {
+            mat_str += "[";
+            size_t j=0;
+            for (;j < mat.get_col(); j++)
+            {
+
+                // this block will handle situations of 'negative zero' in cpp (so printing shall be more sympathic for user)
+                if (mat.my_mat[i][j] == 0)
+                {
+                    temp = "0.0";
+                }
+                else 
+                {
+                    temp = std::to_string(mat.my_mat[i][j]);
+                }
+                // ----- end of block ---------
+
+                // this block handle trail of zero in the end of the floating number
+                while (temp.at(temp.size()-1) == '0')
+                {
+                    temp.erase(temp.size()-1);
+                }
+                if (temp.at(temp.size()-1) == '.')
+                {
+                    temp.erase(temp.size()-1);
+                }
+                //---------- end of block --------------------------------
+                
+                mat_str += temp;
+                mat_str += " ";
+            }
+            if (j > 0)
+            { // erase last whitespace if exist
+                mat_str.erase(mat_str.size()-1);
+            }
+            mat_str += "]\n";
+        }
+
+        // mat_str.erase(mat_str.size()-1); // remove last downline, means cursor will be on the end of the matrix printing and not line below!
+        out << mat_str;
+        return out;
+    }
 }
